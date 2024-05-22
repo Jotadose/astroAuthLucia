@@ -10,8 +10,21 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.8.6",
     "@astrojs/check": "^0.7.0",
-    "typescript": "^5.4.5"
+    "@astrojs/db": "^0.11.3",
+    "@astrojs/node": "^8.2.5",
+    "@astrojs/tailwind": "^5.1.0",
+    "@astrojs/vercel": "^7.6.0",
+    "@auth/core": "^0.18.6",
+    "@lucia-auth/adapter-drizzle": "^1.0.7",
+    "@lucia-auth/oauth": "^3.5.3",
+    "arctic": "^1.8.1",
+    "astro": "^4.8.6",
+    "auth-astro": "^4.1.1",
+    "lucia": "^3.2.0",
+    "oslo": "^1.2.0",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "vercel": "^34.2.0"
   }
 }
