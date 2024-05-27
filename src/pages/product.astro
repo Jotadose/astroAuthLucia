@@ -1,6 +1,8 @@
 ---
+
 import { db,  Todo } from "astro:db"
 import { generateId } from "lucia";
+
 
 if (Astro.request.method === "POST") {
     
@@ -62,9 +64,13 @@ const todos = await db.select().from(Todo)
         <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
         Descripción
         </label>
+
         <textarea 
         name="description" 
         class="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 text-gray-300 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Descripción de la tarea"></textarea>
+
+
+
     </div>
     
     <div class="flex items-center justify-between">
