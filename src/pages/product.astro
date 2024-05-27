@@ -1,42 +1,35 @@
 ---
-import { defineAction } from "astro:actions";
-import { dbUrl } from "astro:db"
-import { db, Category, Todo } from "astro:db"
+import { db,  Todo } from "astro:db"
+import { generateId } from "lucia";
 
-if (Astro.request.method === "POST ") {
-
-    const formData = await Astro.request.formData();
+if (Astro.request.method === "POST") {
+    
+    const formData = await  Astro.request.formData();
     const title = formData.get("title");
+    const id = generateId(3);
+    const stock = formData.get("stock");
     const description = formData.get("description");
-    const category_id = formData.get("category_id");
-    console.log( {title, description, category_id});
+    console.log({id,title,description,stock});
 
     if ( 
         typeof title === "string" &&
         typeof description === "string" &&
-        typeof category_id === "string"
+        typeof stock === "string"
     ) {
 
-        db.insert(Todo).values({
-            id,
-            title,
-            description,
-            userId,
-            category_id})
+    await db.insert(Todo).values([{
+                id,
+                title,
+                description,
+                stock
+                }])
     }
+    
 }
 
 
-const categories = await db.select().from(Category);
 
-
-
-console.log(Todo.title)
-
-
-
-
-
+const todos = await db.select().from(Todo)
 ---
 
 <html lang="es">
@@ -45,43 +38,77 @@ console.log(Todo.title)
 <meta charset="UTF-8">
 </head>
 <body>
-<div class="flex justify-center items-center h-screen bg-gray-100">
-    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
+<div class="grid place-content-center  bg-gray-700">
+    <form 
+    method="POST" 
+    class="bg-black shadow-md rounded px-4 pt-6 pb-6">
+    <div class="mb-1">
+        <label class="block text-gray-300 text-sm font-bold mb-2" for="title">
         Título
         </label>
         <input 
-         name="title"
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
+        name="title"
+        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
     </div>
-    <div class="mb-6">
+    <div class="mb-1">
+        <label class="block text-gray-300 text-sm font-bold mb-2" for="title">
+        Stock
+        </label>
+        <input 
+        name="stock"
+        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
+    </div>
+    <div class="mb-1">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
         Descripción
         </label>
-        <textarea name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Descripción de la tarea"></textarea>
+        <textarea 
+        name="description" 
+        class="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 text-gray-300 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Descripción de la tarea"></textarea>
     </div>
-    <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="category">
-        Categoría
-        </label>
-        <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" id="category">
-        <option>Categoría 1</option>
-        <option>Categoría 2</option>
-        <option>Categoría 3</option>
-        {
-            categories.map(category => (
-                <option value={category.id}>{category.label}</option>
-            ))
-        }
-        </select>
-    </div>
+    
     <div class="flex items-center justify-between">
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" >
         Crear Tarea
         </button>
     </div>
+    
     </form>
+
+
+    <div class="flex items-center justify-center mt-10">
+        <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+            <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="py-3 px-6">ID</th>
+                    <th scope="col" class="py-3 px-6">Titulo</th>
+                    <th scope="col" class="py-3 px-6">Stock</th>
+                    <th scope="col" class="py-3 px-6">Descripcion</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {todos.map( todos => (
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td class="py-4 px-6">{todos.id}</td>
+                    <td class="py-4 px-6">{todos.title}</td>
+                    <td class="py-4 px-6">{todos.stock}</td>
+                    <td class="py-4 px-6">{todos.description}</td>
+
+                </tr>
+                
+                ))}
+                </tbody>
+            </table>
+            </div>
+    </div>
+    
+    </div>
+    
+    
 </div>
+
 </body>
 </html>

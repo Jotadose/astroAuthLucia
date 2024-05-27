@@ -11,7 +11,7 @@ export async function POST(context:APIContext): Promise<Response>
     const formData = await context.request.formData();
     const username = formData.get("username");
     const password = formData.get("password");
-
+    console.log({username, password})
     if (!username || !password) {
         return new Response("Username and Password are required", {status: 400});
 
@@ -45,6 +45,8 @@ export async function POST(context:APIContext): Promise<Response>
     sessionCookie.value,
     sessionCookie.attributes
 );
+
+console.log(User)
 return context.redirect("/");
 }
 
