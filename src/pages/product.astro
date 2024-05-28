@@ -8,7 +8,7 @@ if (Astro.request.method === "POST") {
     
     const formData = await  Astro.request.formData();
     const title = formData.get("title");
-    const id = generateId(3);
+    const id = generateId(6);
     const stock = formData.get("stock");
     const description = formData.get("description");
     console.log({id,title,description,stock});
@@ -32,6 +32,7 @@ if (Astro.request.method === "POST") {
 
 
 const todos = await db.select().from(Todo)
+
 ---
 
 <html lang="es">
@@ -39,8 +40,8 @@ const todos = await db.select().from(Todo)
 <title>Crear Tarea</title>
 <meta charset="UTF-8">
 </head>
-<body>
-<div class="grid place-content-center  bg-gray-700">
+<body class="bg-gray-700">
+<div class="block bg-gray-700">
     <form 
     method="POST" 
     class="bg-black shadow-md rounded px-4 pt-6 pb-6">
@@ -61,7 +62,7 @@ const todos = await db.select().from(Todo)
         class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
     </div>
     <div class="mb-1">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
+        <label class="block text-gray-300 text-sm font-bold mb-2" for="description">
         Descripción
         </label>
 
@@ -82,7 +83,7 @@ const todos = await db.select().from(Todo)
     </form>
 
 
-    <div class="flex items-center justify-center mt-10">
+    <div class="justify-center mt-10  space-x-10 ">
         <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
             <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
