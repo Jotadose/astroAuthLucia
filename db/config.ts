@@ -23,6 +23,7 @@ const Todo = defineTable ({
     id: column.text({primaryKey: true, unique: true}),
     title: column.text(),
     stock: column.text(),
+    fecha: column.text(),
     description: column.text(),
     }
 })

@@ -7,24 +7,27 @@ import { generateId } from "lucia";
 if (Astro.request.method === "POST") {
     
     const formData = await  Astro.request.formData();
-    const title = formData.get("title");
     const id = generateId(6);
+    const title = formData.get("title");
     const stock = formData.get("stock");
+    const fecha = formData.get("fecha");
     const description = formData.get("description");
-    console.log({id,title,description,stock});
+    console.log({id,title,stock,fecha,description});
 
     if ( 
         typeof title === "string" &&
         typeof description === "string" &&
-        typeof stock === "string"
+        typeof stock === "string" &&
+        typeof fecha === "string"
     ) {
 
-    await db.insert(Todo).values([{
+    await db.insert(Todo).values({
                 id,
                 title,
-                description,
-                stock
-                }])
+                stock,
+                fecha,
+                description
+                })
     }
     
 }
@@ -60,6 +63,15 @@ const todos = await db.select().from(Todo)
         <input 
         name="stock"
         class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
+    </div> 
+    <div class="mb-1">
+        <label class="block text-gray-300 text-sm font-bold mb-2" for="title">
+        Fecha
+        </label>
+        <input 
+        type="date"
+        name="fecha"
+        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
     </div>
     <div class="mb-1">
         <label class="block text-gray-300 text-sm font-bold mb-2" for="description">
@@ -92,6 +104,7 @@ const todos = await db.select().from(Todo)
                     <th scope="col" class="py-3 px-6">ID</th>
                     <th scope="col" class="py-3 px-6">Titulo</th>
                     <th scope="col" class="py-3 px-6">Stock</th>
+                    <th scope="col" class="py-3 px-6">Fecha</th>
                     <th scope="col" class="py-3 px-6">Descripcion</th>
 
                 </tr>
@@ -102,6 +115,7 @@ const todos = await db.select().from(Todo)
                     <td class="py-4 px-6">{todos.id}</td>
                     <td class="py-4 px-6">{todos.title}</td>
                     <td class="py-4 px-6">{todos.stock}</td>
+                    <td class="py-4 px-6">{todos.fecha}</td>
                     <td class="py-4 px-6">{todos.description}</td>
 
                 </tr>

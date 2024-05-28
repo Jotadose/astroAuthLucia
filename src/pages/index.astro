@@ -14,8 +14,7 @@ const  session = await getSession(Astro.request);
 <meta name="generator" content={Astro.generator} />
 <title>AstroAuthLuciaDB</title>
 </head>
-<body class="min-h-screen max-h-screen flex justify-center place-items-center bg-gray-600">
-
+<body class="h-screen w-screen flex justify-center place-items-center  bg-gray-950">
 
 { session ? <OauthLayer/> : <AuthUser/> }
 </body>
