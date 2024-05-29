@@ -1,0 +1,59 @@
+{
+	"version": 3,
+	"routes": [
+		{
+			"src": "^/_astro/(.*)$",
+			"headers": {
+				"cache-control": "public, max-age=31536000, immutable"
+			},
+			"continue": true
+		},
+		{
+			"handle": "filesystem"
+		},
+		{
+			"src": "^\\/_image$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/api\\/auth(?:\\/(.*?))?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/api\\/signin\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/api\\/signout\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/api\\/signup\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/authUser\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/oauthLayer\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/product\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/signin\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/signup\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/$",
+			"dest": "_render"
+		}
+	]
+}
