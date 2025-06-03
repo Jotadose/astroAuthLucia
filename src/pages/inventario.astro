@@ -1,0 +1,102 @@
+---
+import { db, Productos } from "astro:db";
+
+if (Astro.request.method === "POST") {
+    
+    const formData = await  Astro.request.formData();
+    const id_producto = formData.get("id_producto");
+    const nombre_producto = formData.get("title");
+    const precio = formData.get("precio");
+    
+    console.log({id_producto,nombre_producto,precio});
+    
+    if ( 
+        typeof id_producto === "string" &&
+        typeof nombre_producto === "string" &&
+        typeof precio === "number" 
+        ) {
+            
+            await db.insert(Productos).values({
+                id_producto,
+                nombre_producto,
+                precio
+            })
+        }
+        
+    }
+    
+    const productos = await db.select().from(Productos)
+---
+
+<html lang="es">
+<head>
+    <title>Inventario</title>
+    <meta charset="UTF-8">
+    <link href="/path/to/tailwind.css" rel="stylesheet">
+</head>
+<body class=" h-full bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-1/5 bg-gray-800 text-white p-4">
+            <ul>
+                <li class="p-2"><a href="#">INICIO</a></li>
+                <li class="p-2"><a href="#">INVENTARIO</a></li>
+                <li class="p-2"><a href="#">SIMULAR VENTA</a></li>
+                <li class="p-2"><a href="#">ABASTECIMIENTO</a></li>
+                <li class="p-2"><a href="#">ADMINISTRADOR</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="w-4/5 p-6">
+            <!-- Agregar Producto -->
+            <div class="mb-6">
+                <h2 class="text-lg font-bold mb-2">Agregar Producto</h2>
+                <form method="POST" class="grid grid-cols-4 gap-4 bg-white p-4 rounded shadow">
+                    <input name="id_producto" placeholder="Id del Producto" class="p-2 border rounded">
+                    <input name="nombre_producto" placeholder="Nombre del Prod." class="p-2 border rounded">
+                    <input name="cantidad" placeholder="Cantidad" class="p-2 border rounded">
+                    <input name="precio" placeholder="Precio" class="p-2 border rounded">
+                    <button type="submit" class="col-span-4 bg-blue-500 text-white py-2 rounded">Agregar Producto</button>
+                </form>
+            </div>
+
+            <!-- Mostrar Inventario -->
+            <div class="mb-6">
+                <h2 class="text-lg font-bold mb-2">Mostrar Inventario</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded shadow">
+                        <thead>
+                            <tr class="bg-gray-800 text-white">
+                                <th class="p-2">Id del Producto</th>
+                                <th class="p-2">Nombre del Prod.</th>
+                                <th class="p-2">Cantidad</th>
+                                <th class="p-2">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {productos.map(producto => (
+                                <tr class="border-b">
+                                    <td class="p-2">{producto.id_producto}</td>
+                                    <td class="p-2">{producto.nombre_producto}</td>
+                                    <td class="p-2">{producto.precio}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Actualizar Inventario -->
+            <div>
+                <h2 class="text-lg font-bold mb-2">Actualizar Inventario</h2>
+                <form method="POST" class="grid grid-cols-2 gap-4 bg-white p-4 rounded shadow">
+                    <input name="id_producto" placeholder="Id del Producto" class="p-2 border rounded">
+                    <input name="cantidad" placeholder="Cantidad" class="p-2 border rounded">
+                    <button type="submit" class="col-span-2 bg-blue-500 text-white py-2 rounded">Actualizar Inventario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

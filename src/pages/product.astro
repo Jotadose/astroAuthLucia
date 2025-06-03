@@ -1,40 +1,45 @@
 ---
 
-import { db,  Todo } from "astro:db"
+
 import { generateId } from "lucia";
+import { db, Todo } from "astro:db"
 
+const todos = await (async () => {
+    if (Astro.request.method === "POST") {
+        const formData = await  Astro.request.formData();
+        const id = generateId(1);
+        const title = formData.get("title");
+        const stock = formData.get("stock");
+        const fecha = formData.get("fecha");
+        const description = formData.get("description");
 
-if (Astro.request.method === "POST") {
-    
-    const formData = await  Astro.request.formData();
-    const id = generateId(8);
-    const title = formData.get("title");
-    const stock = formData.get("stock");
-    const fecha = formData.get("fecha");
-    const description = formData.get("description");
-    console.log({id,title,stock,fecha,description});
-
-    if ( 
-        typeof title === "string" &&
-        typeof description === "string" &&
-        typeof stock === "string" &&
-        typeof fecha === "string"
-    ) {
-
-    await db.insert(Todo).values({
+        console.log({id,title,stock,fecha,description});
+        
+        if ( 
+            typeof title === "string" &&
+            typeof description === "string" &&
+            typeof stock === "string" &&
+            typeof fecha === "string" 
+        ) {
+            
+            await db.insert(Todo).values({
                 id,
                 title,
                 stock,
                 fecha,
                 description
-                })
+            });
+        }
+        
     }
-    
-}
+
+    return await db.select().from(Todo)
+})();
 
 
 
-const todos = await db.select().from(Todo)
+
+
 
 ---
 
@@ -50,7 +55,7 @@ const todos = await db.select().from(Todo)
     class="bg-black shadow-md rounded px-4 pt-6 pb-6">
     <div class="mb-1">
         <label class="block text-gray-300 text-sm font-bold mb-2" for="title">
-        Título
+        Nombre del Producto
         </label>
         <input 
         name="title"
@@ -63,16 +68,16 @@ const todos = await db.select().from(Todo)
         <input 
         
         name="stock"
-        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
+        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="stock" type="text" placeholder="">
     </div> 
     <div class="mb-1">
         <label class="block text-gray-300 text-sm font-bold mb-2" for="title">
-        Fecha
+        Precio
         </label>
         <input 
-        type="date"
+        type="text"
         name="fecha"
-        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="title" type="text" placeholder="Título de la tarea">
+        class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" id="fecha " type="text" placeholder="">
     </div>
     <div class="mb-1">
         <label class="block text-gray-300 text-sm font-bold mb-2" for="description">
@@ -89,7 +94,7 @@ const todos = await db.select().from(Todo)
     
     <div class="flex items-center justify-between">
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" >
-        Crear Tarea
+        Submit
         </button>
     </div>
     
@@ -111,16 +116,15 @@ const todos = await db.select().from(Todo)
                 </tr>
                 </thead>
                 <tbody>
-                {todos.map( todos => (
+                {todos.map((todo : Todo) => (
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <td class="py-4 px-6">{todos.id}</td>
-                    <td class="py-4 px-6">{todos.title}</td>
-                    <td class="py-4 px-6">{todos.stock}</td>
-                    <td class="py-4 px-6">{todos.fecha}</td>
-                    <td class="py-4 px-6">{todos.description}</td>
+                    <td class="py-4 px-6">{todo.id}</td>
+                    <td class="py-4 px-6">{todo.title}</td>
+                    <td class="py-4 px-6">{todo.stock}</td>
+                    <td class="py-4 px-6">{todo.fecha}</td>
+                    <td class="py-4 px-6">{todo.description}</td>
 
                 </tr>
-                
                 ))}
                 </tbody>
             </table>

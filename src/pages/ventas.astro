@@ -1,0 +1,136 @@
+---
+import { db, Venta, VentaProducto, Productos } from "astro:db";
+import { generateId } from "lucia";
+
+if (Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    const id_venta = generateId(1);
+    const id_cliente = parseInt(formData.get("id_cliente") as string);
+    const fecha_venta = new Date().toISOString().split('T')[0];
+    const total_venta = parseFloat(formData.get("total_venta") as string);
+    const tipo_pago = formData.get("tipo_pago") as string;
+    const id_producto = parseInt(formData.get("id_producto") as string);
+    const cantidad = parseInt(formData.get("cantidad") as string);
+
+    if (
+        typeof tipo_pago === "string" &&
+        !isNaN(total_venta) &&
+        !isNaN(id_cliente) &&
+        !isNaN(id_producto) &&
+        !isNaN(cantidad)
+    ) {
+        // Insertar venta
+        await db.insert(Venta).values({
+            id_venta,
+            id_cliente,
+            fecha_venta,
+            total_venta,
+            tipo_pago,
+        });
+
+        // Insertar detalle de venta
+        await db.insert(VentaProducto).values({
+            id_ventaProducto: generateId(1),
+            id_venta,
+            id_producto,
+        });
+
+        // Actualizar stock del producto
+        const productos = await db.select().from(Productos).where(Productos.columns.id_producto.equals(id_producto)).execute();
+        const producto = productos[0];
+        if (producto && producto.stock >= cantidad) {
+            await db.update(Productos)
+                .set({ stock: producto.stock - cantidad })
+                .where(Productos.columns.id_producto.equals(id_producto));
+        }
+    }
+}
+
+const productos = await db.select().from(Productos).execute();
+---
+
+<html lang="es">
+<head>
+    <title>Realizar Venta</title>
+    <meta charset="UTF-8">
+</head>
+<body class="bg-gray-700">
+<div class="block bg-gray-700">
+    <form method="POST" class="bg-black shadow-md rounded px-4 pt-6 pb-6">
+        <div class="mb-1">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="id_cliente">
+                ID del Cliente
+            </label>
+            <input 
+                name="id_cliente"
+                class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" 
+                id="id_cliente" type="text" placeholder="ID del cliente">
+        </div>
+        <div class="mb-1">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="id_producto">
+                ID del Producto
+            </label>
+            <input 
+                name="id_producto"
+                class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" 
+                id="id_producto" type="text" placeholder="ID del producto">
+        </div>
+        <div class="mb-1">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="cantidad">
+                Cantidad
+            </label>
+            <input 
+                name="cantidad"
+                class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" 
+                id="cantidad" type="text" placeholder="Cantidad">
+        </div>
+        <div class="mb-1">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="total_venta">
+                Total Venta
+            </label>
+            <input 
+                name="total_venta"
+                class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" 
+                id="total_venta" type="text" placeholder="Total de la venta">
+        </div>
+        <div class="mb-1">
+            <label class="block text-gray-300 text-sm font-bold mb-2" for="tipo_pago">
+                Tipo de Pago
+            </label>
+            <input 
+                name="tipo_pago"
+                class="shadow appearance-none bg-gray-700 border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" 
+                id="tipo_pago" type="text" placeholder="Tipo de pago">
+        </div>
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Realizar Venta
+            </button>
+        </div>
+    </form>
+
+    <div class="justify-center mt-10 space-x-10">
+        <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="py-3 px-6">ID</th>
+                        <th scope="col" class="py-3 px-6">Nombre</th>
+                        <th scope="col" class="py-3 px-6">Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {productos.map(producto => (
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <td class="py-4 px-6">{producto.id_producto}</td>
+                            <td class="py-4 px-6">{producto.nombre_producto}</td>
+                            <td class="py-4 px-6">{producto.precio}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
